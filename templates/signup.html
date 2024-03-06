@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Where is my book
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger" id="error" role="alert" style="display: none;">
+                <strong>Error!</strong> <span id="error-message"></span>
+            </div>
+        </div>
+    </div>
+    <form action="/signup" method="post">
+        <div class="mb-3">
+            <h1 class="display-4">Register</h1>
+            <br/>
+        </div>
+    <div class="mb-3">
+        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" id="username" placeholder="Username" type="text">
+    </div>
+    <div class="mb-3">
+        <input class="form-control mx-auto w-auto" name="password" id="password" placeholder="Password" type="password" onblur="validatePassword()">
+    </div>
+    <div class="mb-3">
+        <input class="form-control mx-auto w-auto" name="confirmation" id="confirmation" placeholder="Confirm password" type="password" onblur="checkIfPasswordsAreMatching()">
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-primary" type="submit">Sign up</button>
+    </div>
+    
+    </form>
+</div>
+{% endblock %}
