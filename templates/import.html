@@ -5,5 +5,77 @@
 {% endblock %}
 
 {% block main %}
-<h1 class="display-4">Import</h1>
+<div class="container mt-1">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Upload your file</h5>
+                    <form action="/import" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <input type="file" name="file" class="form-control-file btn-dark" id="file">
+                        </div>
+                        <button type="submit" name="submit" class="btn btn-dark">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if books %}
+<br/>
+    <form action="/filterbooks" method="post">
+    <div class="form-group container">
+        <label for="tagFilter">Select tags</label>
+        <select class="js-example-basic-multiple" name="selecttags" id="selecttags" multiple="multiple">
+            {%if tags %}
+            {% for tag in tags %}
+                <option value="{{ tag }}">{{ tag }}</option>
+            {% endfor %}
+            {% endif %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-dark">Search</button> 
+    </form>
+    <div class="container mt-5">
+        <input type="checkbox" class="book-checkbox" id="select-all">
+        <label class="form-check-label" for="select-all">
+            Select all
+        </label>
+        <table class="table-sm">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Year Publishing</th>
+                    <th>My Rating</th>
+                    <th>Bookshelf</th>
+                    <th>Tags</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>
+                        <input type="checkbox" class="book-checkbox" name="selected_books" value="{{ book['Book ID'] }}">
+                    </td>
+                    <td>{{ book['Title'] }}</td>
+                    <td>{{ book['Author'] }}</td>
+                    <td>{{ book['Year'] }}</td>
+                    <td>{{ book['My Rating'] }}</td>
+                    <td>{{ book['Bookshelf'] }}</td>
+                    <td>
+                        <ul>
+                            {% for tag in book['Tags'] %}
+                                <li role="button">{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}
+
 {% endblock %}

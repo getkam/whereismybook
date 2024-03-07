@@ -29,3 +29,19 @@ function validateAmountOfShares(){
   }
   document.getELementById("amount").innerText ==""
 }
+
+$(document).ready(function() {
+  $('.js-example-basic-multiple').select2({
+      placeholder: "Select tags",
+      allowClear: true
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('select-all').addEventListener('change', function (event) {
+      var checked = event.target.checked;
+      document.querySelectorAll('.book-checkbox').forEach(function (checkbox) {
+          checkbox.checked = checked;
+      });
+  });
+});

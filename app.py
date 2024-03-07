@@ -3,6 +3,7 @@ import bcrypt
 from flask import Flask, flash, redirect, render_template, request, session
 import sqlite3
 from flask_session import Session
+import csv
 
 from helpers import login_required
 
@@ -13,7 +14,6 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -114,7 +114,54 @@ def logout():
 @app.route("/import", methods=["GET", "POST"])
 @login_required
 def import_page():
-    return render_template("import.html")
+    if request.method == "POST":
+        if 'file' in request.files:
+            file = request.files['file']
+            if file.filename == '':
+                return render_template("apology.html", message="No file selected")
+            if file and not file.filename.endswith('.csv'):
+                return render_template("apology.html", message="File must be a .csv file")
+            file.save("uploads/" + file.filename)
+            data = []
+            tags = []
+            with open("uploads/" + file.filename, "r", encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    bookshelves = row['Bookshelves'].split(',')
+                    book_data = {
+                    'Book ID': row['Book Id'],
+                    'Title': row['Title'],
+                    'Author': row['Author'],
+                    'Year': row['Year Published'],
+                    'My Rating': row['My Rating'],
+                    'Tags': bookshelves,
+                    'Bookshelf': row['Exclusive Shelf']
+                    }
+                    for tag in bookshelves:
+                        if tag not in tags:
+                            tags.append(tag)
+                    data.append(book_data)
+                    session["data"] = data
+                    session["tags"] = tags
+            return render_template("import.html", books=session.get("data"), tags=session.get("tags"))
+        else:
+            return render_template("apology.html", message="No file part")
+    else:
+        return render_template("import.html", books=session.get("data"), tags=session.get("tags"))
+    
+@app.route("/filterbooks", methods=["GET", "POST"])
+@login_required
+def filter_books():
+    if request.method == "POST":
+        tags = request.form.getlist("selecttags")
+        filtered_data = []
+        for row in session.get("data"):
+            if not set(tags).isdisjoint(row['Tags']):
+                filtered_data.append(row)
+        print(filtered_data)
+        return render_template("import.html", books=filtered_data, tags=session.get("tags"))
+    else:
+        return render_template("books.html")
 
 @app.route("/wishlist", methods=["GET", "POST"])
 @login_required
